@@ -91,11 +91,20 @@ if ($disetujui && $belumdisetujui && $ditolak) {
                         <h6 class="text-white">Berhasil</h6>
                         <p class="text-sm text-white mb-0">Barang berhasil disetujui dan dibuka untuk lelang</p>
                     </div>
-
                     <?php }else if($_GET['info'] == "gagal"){ ?>
                     <div class="alert alert-warning alert-dismissible mt-2">
                         <h6 class="text-white">Gagal</h6>
                         <p class="text-sm text-white mb-0">Barang belum berhasil disetujui</p>
+                    </div>
+                    <?php }else if($_GET['info'] == "tolak"){ ?>
+                    <div class="alert alert-success alert-dismissible mt-2">
+                        <h6 class="text-white">Berhasil</h6>
+                        <p class="text-sm text-white mb-0">Barang berhasil ditolak</p>
+                    </div>
+                    <?php }else if($_GET['info'] == "gagaltolak"){ ?>
+                    <div class="alert alert-success alert-dismissible mt-2">
+                        <h6 class="text-white">Gagal</h6>
+                        <p class="text-sm text-white mb-0">Barang belum berhasil ditolak</p>
                     </div>
                     <?php } } ?>
       <div class="row mt-4">

@@ -156,7 +156,6 @@ $totalPages = ceil($totalData / $limit);
                           <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Kategori</th>
                           <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Jenis Barang</th>
                           <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Harga Awal</th>
-                          <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Foto</th>
                           <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Status</th>
                           <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Aksi</th>
                         </tr>
@@ -180,9 +179,6 @@ $totalPages = ceil($totalData / $limit);
                           </td>
                           <td>
                             <p class="align-middle text-center text-xs font-weight-bold mb-0">Rp.<?= number_format($dtbrg["harga_awal"]) ?></p>
-                          </td>
-                          <td class="align-middle text-center">
-                            <button class="btn btn-dark text-xs mb-0">Lihat</button>
                           </td>
                           <td class="align-middle text-center text-sm">
                           <?php

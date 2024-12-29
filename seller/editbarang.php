@@ -20,7 +20,7 @@ $data = mysqli_fetch_assoc($query);
         <div class="mt-4">
           <div class="card py-3 px-3">
             <h6 class="mb-3">Pengajuan Barang Lelang</h6>
-              <form action="add.php" method="POST" enctype="multipart/form-data">
+              <form action="edit.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
                   <p class="fw-bold text-sm text-dark mb-0">Foto Barang</p>
                   <?php
@@ -49,11 +49,11 @@ $data = mysqli_fetch_assoc($query);
                     ?>
                 </div>                                  
                 <div class="row">
-                <input type="number" name="id_barang" value="<?= $row['id_barang'] ?>" hidden>
+                <input type="number" name="id_barang" value="<?= $data['id_barang'] ?>" hidden>
                 <input type="email" name="id_penjual" value="<?= $_SESSION['email'] ?>" hidden>
                   <div class="col-md-4 mb-3">
                     <label for="nama_barang" class="fw-bold text-dark">Nama Barang</label>
-                    <input type="text" name="nama_barang" class="form-control ps-3 bg-gray-100" value="<?= $data['nama'] ?>">
+                    <input type="text" name="nama_barang" class="form-control ps-3 bg-gray-100" value="<?= $data['nama_barang'] ?>">
                   </div>
                   <div class="col-md-4">
                     <label for="harga_awal" class="fw-bold text-dark">Harga Awal</label>
