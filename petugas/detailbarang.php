@@ -53,15 +53,15 @@ $data = mysqli_fetch_assoc($query);
                 <input type="email" name="id_petugas" value="<?= $_SESSION['email'] ?>" hidden>
                   <div class="col-md-4 mb-3">
                     <label for="nama_barang" class="fw-bold text-dark">Nama Barang</label>
-                    <input type="text" name="nama_barang" class="form-control ps-3 bg-gray-100" value="<?= $data['nama_barang'] ?>">
+                    <input type="text" name="nama_barang" class="form-control ps-3 bg-gray-100" value="<?= $data['nama_barang'] ?>" readonly>
                   </div>
                   <div class="col-md-4">
                     <label for="harga_awal" class="fw-bold text-dark">Harga Awal</label>
-                    <input type="text" id="harga_awal" name="harga_awal" class="form-control ps-3 bg-gray-100" value="Rp. <?= number_format($data['harga_awal']) ?>">
+                    <input type="text" id="harga_awal" name="harga_awal" class="form-control ps-3 bg-gray-100" value="Rp. <?= number_format($data['harga_awal']) ?>" readonly>
                   </div>
                   <div class="col-md-4">
                     <label for="lokasi" class="fw-bold text-dark">Lokasi</label>
-                    <select name="lokasi" class="form-control bg-gray-100 ps-3" id="lokasi" required>
+                    <select name="lokasi" class="form-control bg-gray-100 ps-3" id="lokasi" readonly>
                         <option value="bandung" <?= ($data['lokasi'] == 'bandung') ? 'selected' : '' ?>>Bandung</option>
                         <option value="jakarta" <?= ($data['lokasi'] == 'jakarta') ? 'selected' : '' ?>>Jakarta</option>
                         <option value="surabaya" <?= ($data['lokasi'] == 'surabaya') ? 'selected' : '' ?>>Surabaya</option>
@@ -69,7 +69,7 @@ $data = mysqli_fetch_assoc($query);
                   </div>
                   <div class="col-md-6 mb-3">
                     <label for="kondisi" class="fw-bold text-dark">Kondisi Barang</label>
-                    <select class="form-control bg-gray-100 ps-3" name="kondisi" id="kondisiBarang" required>
+                    <select class="form-control bg-gray-100 ps-3" name="kondisi" id="kondisiBarang" readonly>
                         <option value="bekas" <?= ($data['kondisi'] == 'bekas') ? 'selected' : '' ?>>Bekas</option>
                         <option value="baru" <?= ($data['kondisi'] == 'baru') ? 'selected' : '' ?>>Baru</option>
                     </select>
@@ -94,12 +94,16 @@ $data = mysqli_fetch_assoc($query);
                   </div>
                   <div class="col-md-12">
                     <label for="deskripsi" class="fw-bold text-dark">Deskripsi</label>
-                    <textarea class="form-control ps-3 bg-gray-100" name="deskripsi" id="deskripsi" rows="10" placeholder="Deskripsi Barang" required><?= $data['deskripsi'] ?></textarea>
+                    <textarea class="form-control ps-3 bg-gray-100" name="deskripsi" id="deskripsi" rows="10" placeholder="Deskripsi Barang" readonly><?= $data['deskripsi'] ?></textarea>
                   </div>
                   <div class="text-center mt-3">
                     <a href="barang.php" class="btn btn-secondary w-10">Kembali</a>
+                    <?php 
+                    if ($data['status'] == "belum disetujui" || $data['status'] == "ditolak"){
+                    ?>
                     <a class="btn btn-dark w-10" data-bs-toggle="modal" data-bs-target="#setujui">Setujui</a>
-                    <a href="" class="btn btn-danger w-10">Tolak</a>
+                    <a class="btn btn-danger w-10" data-bs-toggle="modal" data-bs-target="#tolak">Tolak</a>
+                    <?php }?>
                   </div>
                 </div>
                 <!-- Modal -->
@@ -112,6 +116,21 @@ $data = mysqli_fetch_assoc($query);
                       <div class="d-flex justify-content-center text-center">
                         <!-- <button type="button" class="btn btn-danger me-2 w-20" data-bs-dismiss="modal"><a href="../seller/logout.php">Ya</a></button> -->
                         <button type="submit" class="btn btn-dark w-20 me-2" name="simpan">Setujui</button>
+                        <button type="button" class="btn btn-secondary w-20">Kembali</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="modal fade" id="tolak" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-body p-5 text-center">
+                        Apakah anda yakin ingin menolak barang ini?
+                      </div>
+                      <div class="d-flex justify-content-center text-center">
+                        <!-- <button type="button" class="btn btn-danger me-2 w-20" data-bs-dismiss="modal"><a href="../seller/logout.php">Ya</a></button> -->
+                        <a href="tolakbarang.php?id_barang=<?= $id_barang ?>" class="btn btn-danger w-20 me-2">Ya</a>
                         <button type="button" class="btn btn-secondary w-20">Kembali</button>
                       </div>
                     </div>

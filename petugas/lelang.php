@@ -4,13 +4,37 @@ include "../layout/mainsidebar.php";
 include '../db_connect.php';
 
 // Mengambil data barang dari tabel barang
-$sqlStatement = "SELECT lelang.id_lelang, barang.nama_barang, barang.harga_awal, barang.kondisi, barang.status, barang.id_penjual,
+$sqlStatement = "SELECT lelang.id_lelang, lelang.tgl_dibuka, lelang.harga_akhir, lelang.status, barang.nama_barang, barang.harga_awal, barang.kondisi, barang.id_penjual,
     kategori.nama_kategori, user.nama
     FROM barang 
     JOIN kategori ON barang.id_kategori = kategori.id_kategori
+    JOIN lelang on barang.id_barang = lelang.id_barang
     JOIN user ON barang.id_penjual = user.email";
 $query = mysqli_query($conn, $sqlStatement);
 $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
+
+$dtdibuka = "SELECT COUNT(*) as total FROM lelang WHERE status = 'dibuka'";
+$dtditutup = "SELECT COUNT(*) as total FROM lelang WHERE status = 'ditutup'";
+$dtselesai = "SELECT COUNT(*) as total FROM lelang WHERE status = 'selesai'";
+
+$dibuka = mysqli_query($conn, $dtdibuka);
+$ditutup = mysqli_query($conn, $dtditutup);
+$selesai = mysqli_query($conn, $dtselesai);
+
+if ($dibuka && $ditutup && $selesai) {
+    $datadibuka = mysqli_fetch_assoc($dibuka);
+    $dataditutup = mysqli_fetch_assoc($ditutup);
+    $dataselesai = mysqli_fetch_assoc($selesai);
+    
+    $total_dibuka = $datadibuka['total'];
+    $total_ditutup = $dataditutup['total'];
+    $total_selesai = $dataselesai['total'];
+} else {
+    // Penanganan jika query gagal
+    $total_dibuka = 0;
+    $total_ditutup = 0;
+    $total_selesai = 0;
+}
 ?>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg pt-3">
     <div class="container-fluid py-2">
@@ -22,12 +46,12 @@ $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
       </nav>
       <div class="row d-flex justify-content-center mt-4">
         <h5 class="mb-3">Data Lelang</h5>
-        <div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4 col-sm-4 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-2 ps-3 d-flex justify-content-between">
               <div class="">
                 <p class="text-sm mb-0 text-capitalize">Lelang Dibuka</p>
-                <h4 class="mb-0 text-center ">5</h4>
+                <h4 class="mb-0 text-center "><?= $total_dibuka?></h4>
               </div>
               <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
                 <i class="material-symbols-rounded opacity-10">folder</i>
@@ -35,15 +59,28 @@ $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
             </div>
           </div>
         </div>
-        <div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4 col-sm-4 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-2 ps-3 d-flex justify-content-between">
               <div class="">
                 <p class="text-sm mb-0 text-capitalize">Lelang Ditutup</p>
-                <h4 class="mb-0 text-center ">5</h4>
+                <h4 class="mb-0 text-center "><?= $total_ditutup?></h4>
               </div>
               <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
                 <i class="material-symbols-rounded opacity-10">close</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-sm-4 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-header p-2 ps-3 d-flex justify-content-between">
+              <div class="">
+                <p class="text-sm mb-0 text-capitalize">Lelang Selesai</p>
+                <h4 class="mb-0 text-center "><?= $total_selesai?></h4>
+              </div>
+              <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                <i class="material-symbols-rounded opacity-10">Done</i>
               </div>
             </div>
           </div>
@@ -102,31 +139,51 @@ $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
                   </thead>
                   <tbody>
                     <tr>
+                    <?php
+                          foreach ($data as $key => $dtllg) {
+                      ?>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0 ms-3">1</p>
+                        <p class="text-xs font-weight-bold mb-0 ms-3"><?= ++$key?></p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">Asus Vivobook 14</p>
+                        <p class="text-xs font-weight-bold mb-0"><?= $dtllg['nama_barang'] ?></p>
                       </td>
                       <td>
-                        <p class="align-middle text-center text-xs font-weight-bold mb-0">Elektronik</p>
+                        <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dtllg['nama_kategori'] ?></p>
                       </td>
                       <td>
-                        <p class="align-middle text-center text-xs font-weight-bold mb-0">20 Desember 2024 09:52 AM</p>
+                        <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dtllg['tgl_dibuka'] ?></p>
                       </td>
                       <td>
-                        <p class="align-middle text-center text-xs font-weight-bold mb-0">Rp. 6.000.000</p>
+                        <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dtllg['harga_akhir']?></p>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-success">Dibuka</span>
+                      <?php
+                            // Contoh variabel status, ini biasanya berasal dari database
+                            $status = $dtllg['status']; // Ubah ini sesuai status dari database
+
+                            if ($status == "dibuka") {
+                                echo '<span class="badge badge-sm bg-gradient-success" style="width: 113px;">Dibuka</span>';
+                            } elseif ($status == "belum ditutup") {
+                                echo '<span class="badge badge-sm bg-gradient-secondary" style="width: 113px;">Ditutup</span>';
+                            } elseif ($status == "selesai") {
+                                echo '<span class="badge badge-sm bg-gradient-danger" style="width: 113px;">Selesai</span>';
+                            } else {
+                                echo '<span class="badge badge-sm bg-gradient-dark" style="width: 113px;">Status Tidak Diketahui</span>';
+                                echo $dtllg['status'];
+                            }
+                            ?>
                       </td>
                       <td class="align-middle text-center">
                         <div class="d-flex justify-content-center">
-                            <a class="btn btn-dark text-xs mb-0 me-1" href="detaillelang.html">Lihat Detail</a>
+                            <a class="btn btn-dark text-xs mb-0 me-1" href="detaillelang.php?id_lelang=<?= $dtllg["id_lelang"]; ?>">Lihat Detail</a>
                             <button class="btn btn-danger text-xs mb-0 me-1">Tutup</button>
                         </div>
                       </td>
                     </tr>
+                    <?php
+                          }
+                      ?>
                   </tbody>
                 </table>
                 <div class="d-flex justify-content-between align-items-center">

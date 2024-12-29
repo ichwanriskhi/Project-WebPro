@@ -1,7 +1,74 @@
 <?php 
 include "../layout/mainsidebar.php";
 
-include '../db_connect.php';
+include "../db_connect.php";
+
+$id_lelang = $_GET['id_lelang'];
+// Query untuk mengambil data barang dan kategori, termasuk kondisi dan lokasi
+$sqlStatement = "SELECT 
+                    lelang.id_lelang,
+                    barang.id_barang, 
+                    barang.nama_barang, 
+                    kategori.nama_kategori, 
+                    barang.harga_awal, 
+                    barang.foto, 
+                    barang.kondisi, 
+                    barang.deskripsi,
+                    barang.lokasi,
+                    penjual.nama AS nama_penjual,
+                    pembeli.nama AS nama_penawar
+                FROM barang 
+                JOIN kategori ON barang.id_kategori = kategori.id_kategori
+                JOIN user AS penjual ON barang.id_penjual = penjual.email
+                JOIN lelang ON barang.id_barang = lelang.id_barang
+                LEFT JOIN penawaran ON penawaran.id_lelang = lelang.id_lelang
+                LEFT JOIN user AS pembeli ON penawaran.id_pembeli = pembeli.email
+                WHERE lelang.id_lelang = $id_lelang";
+
+$query = mysqli_query($conn, $sqlStatement);
+$data = mysqli_fetch_assoc($query);
+
+if ($data) {
+    // Variabel untuk mempermudah
+    $idBarang = $data['id_barang'];
+    $namaBarang = $data['nama_barang'];
+    $namaKategori = $data['nama_kategori'];
+    $hargaAwal = $data['harga_awal'];
+    $kondisi = $data['kondisi'];
+    $lokasi = $data['lokasi'];
+    $deskripsi = $data['deskripsi'];
+    $penjual = $data['nama_penjual'];
+    $pembeli = $data['nama_penawar'];
+
+    // Menyesuaikan nama lokasi berdasarkan nilai lokasi dari database
+    switch (strtolower(trim($lokasi))) {
+        case 'bandung':
+            $lokasiTampil = 'Telkom University Bandung';
+            break;
+        case 'surabaya':
+            $lokasiTampil = 'Telkom University Surabaya';
+            break;
+        case 'jakarta':
+            $lokasiTampil = 'Telkom University Jakarta';
+            break;
+        default:
+            $lokasiTampil = $lokasi; // Jika lokasi tidak cocok, tampilkan lokasi asli
+            break;
+    }
+} else {
+    echo "Data tidak ditemukan.";
+    exit;
+}
+
+// Query untuk mendapatkan tawaran tertinggi
+$sqlTawaranTertinggi = "SELECT MAX(penawaran_harga) AS tawaran_tertinggi 
+                        FROM penawaran 
+                        WHERE id_barang = $idBarang";
+
+$queryTawaran = mysqli_query($conn, $sqlTawaranTertinggi);
+$rowTawaran = mysqli_fetch_assoc($queryTawaran);
+
+$tawaranTertinggi = $rowTawaran['tawaran_tertinggi'] ?? 0; // Jika tidak ada data, gunakan 0 sebagai default
 ?>
 
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg px-0 pt-3">
@@ -16,55 +83,50 @@ include '../db_connect.php';
                 </ol>
             </nav>
             <div class="row mt-3">
-                <div class="col-md-5 gallery">
-                    <img id="mainImage" alt="iPhone 14 Plus 256GB Blue" class="img-fluid main-gall"
-                        src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/a5e3653c-56a7-4b32-9986-ca0019306c50.jpg" />
-                    <div class="d-flex mt-2 justify-content-between" style="margin-right: 75px;">
-                        <div class="thumbnail"
-                            onclick="changeImage('https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/a5e3653c-56a7-4b32-9986-ca0019306c50.jpg')">
-                            <img alt="Thumbnail 1" class="thumb"
-                                src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/a5e3653c-56a7-4b32-9986-ca0019306c50.jpg">
+                <?php
+                $sqlStatement = "SELECT foto FROM barang
+                WHERE  id_barang = $idBarang";
+                $query = mysqli_query($conn, $sqlStatement);
+                $dataft = mysqli_fetch_assoc($query);
+                    // Ambil data foto dari tabel barang (dalam format string, misalnya: "foto1.jpg,foto2.jpg,...")
+                    $foto = $dataft['foto']; 
+                    $fotoArray = explode(',', $foto); // Pecah string menjadi array
+                    $fotoCount = count($fotoArray); // Hitung jumlah foto
+                
+                    // Ambil foto utama untuk ditampilkan sebagai gambar utama
+                    $mainImage = trim($fotoArray[0]); // Mengambil foto pertama
+                ?>
+                    <div class="col-md-5 gallery">
+                    <img id="mainImage" alt="<?= $dtbrg['nama_barang'] ?>" class="img-fluid main-gall"
+                    src="../assets/img/uploaded/<?= $mainImage ?>" />
+                    <div class="d-flex mt-2 justify-content-between" id="thumbnailContainer" style="margin-right: 75px;">
+                    <?php foreach ($fotoArray as $image) { 
+                        $image = trim($image); // Hapus spasi berlebih
+                        ?>
+                        <div class="thumbnail" onclick="changeImage('../assets/img/uploaded/<?= $image ?>')">
+                            <img alt="Thumbnail" class="thumb" src="../assets/img/uploaded/<?= $image ?>" />
                         </div>
-                        <div class="thumbnail"
-                            onclick="changeImage('https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/246bc7fd-8ddb-42f5-95ff-730d71c89a8d.jpg')">
-                            <img alt="Thumbnail 2" class="thumb"
-                                src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/246bc7fd-8ddb-42f5-95ff-730d71c89a8d.jpg" />
-                        </div>
-                        <div class="thumbnail"
-                            onclick="changeImage('https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/c9a0bf40-59d9-4080-9dfd-107e7a08add1.jpg')">
-                            <img alt="Thumbnail 3" class="thumb"
-                                src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/c9a0bf40-59d9-4080-9dfd-107e7a08add1.jpg" />
-                        </div>
-                        <div class="thumbnail"
-                            onclick="changeImage('https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/fde4d507-5ebd-4492-b60e-d7aa5774a735.jpg')">
-                            <img alt="Thumbnail 4" class="thumb"
-                                src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/fde4d507-5ebd-4492-b60e-d7aa5774a735.jpg" />
-                        </div>
-                        <div class="thumbnail"
-                            onclick="changeImage('https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/ba5a7e1c-3bdc-420e-bf9e-f474d7fe365f.jpg')">
-                            <img alt="Thumbnail 5" class="thumb"
-                                src="https://images.tokopedia.net/img/cache/900/VqbcmM/2024/3/24/ba5a7e1c-3bdc-420e-bf9e-f474d7fe365f.jpg" />
-                        </div>
-                    </div>
+                    <?php } ?>
                 </div>
-                <div class="col-md-7">
-                    <h5 class="h5 fw-bolder"> iPhone 14 Plus 256GB Blue </h5>
+            </div>
+            <div class="col-md-7">
+                    <h5 class="h5 fw-bolder"> <?=$namaBarang?></h5>
                     <div class="category-product d-flex mt-3">
-                        <p class="text-sm me-5">Elektronik</p>
-                        <p class="text-sm me-5">Telkom University Bandung</p>
-                        <p class="text-sm">Baru</p>
+                        <p class="text-sm me-5"><?=$namaKategori?></p>
+                        <p class="text-sm me-5"><?=$lokasiTampil?></p>
+                        <p class="text-sm text-capitalize"><?=$kondisi?></p>
                     </div>
                     <div class="row d-flex justify-content-between">
                         <div class="col-md-6">
                             <label class="form-label text-sm fw-bold text-dark ms-0" for="harga_awal">Harga Awal</label>
                             <input class="form-control bg-white ps-3 text-md fw-bold" id="nominalTawaran" type="text"
-                                value="Rp. 11.000.000" disabled>
+                                value="Rp. <?= number_format($hargaAwal) ?>" disabled>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-sm fw-bold text-dark ms-0" for="tawaran_tertinggi">Tawaran
                                 Tertinggi</label>
                             <input class="form-control bg-white ps-3 text-md fw-bold" id="nominalTawaran" type="text"
-                                value="Rp. 11.500.000" disabled>
+                                value="Rp. <?= number_format($tawaranTertinggi) ?>" disabled>
                         </div>
                     </div>
                     <form class="mt-3">
@@ -73,7 +135,7 @@ include '../db_connect.php';
                                 Tertinggi</label>
                             <input class="form-control bg-white ps-3 text-md fw-bold" id="penawartertinggi"
                                 name="penawartertinggi" placeholder="Silakan masukkan tawaran anda..." type="text"
-                                value="Alexandre Christie" disabled>
+                                value="<?=$pembeli?>" disabled>
                         </div>
                         <button class="btn btn-dark w-100" type="submit">Akhiri Lelang</button>
                     </form>
@@ -82,7 +144,7 @@ include '../db_connect.php';
                         <div class="d-flex align-items-center">
                             <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                                 class="rounded-circle" alt="Profil Penjual" style="width: 50px; height: 50px;">
-                            <p class="text-md ms-3 mt-3">Dewangga Saputra Pidieanto</p>
+                            <p class="text-md ms-3 mt-3"><?=$penjual?></p>
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-star star"></i>
@@ -99,21 +161,7 @@ include '../db_connect.php';
                 <h6>Deskripsi Barang</h6>
                 <div class="desc card py-3 px-4">
                     <p class="text-sm">
-                        Apple iPhone 14 SECOND ORIGINAL iPhone 14 Plus 256GB BEKAS MULUS FULLSETPhone 14. Dengan sistem
-                        kamera ganda
-                        paling hebat di iPhone. Ambil foto yang memukau dalam pencahayaan rendah maupun terang. Deteksi
-                        Tabrakan,
-                        sebuah fitur keselamatan baru, memanggil bantuan saat Anda tak bisa. <br> <br>
-                        Poin-poin fitur utama : <br>
-                        * Layar Super Retina XDR 6,1 inci <br>
-                        * Sistem kamera canggih untuk foto yang lebih baik dalam berbagai kondisi pencahayaan <br>
-                        * Mode Sinematik kini dalam Dolby Vision 4K pada kecepatan hingga 30 fps <br>
-                        * Mode Aksi untuk video handheld yang stabil <br>
-                        * Fitur keselamatan penting, —Deteksi Tabrakan memanggil bantuan saat Anda tak bisa <br>
-                        * Kekuatan baterai sepanjang hari dan pemutaran video hingga 20 jam <br>
-                        * Chip A15 Bionic dengan GPU 5-core untuk performa secepat kilat. Seluler 5G super cepat <br>
-                        * Fitur ketahanan terdepan di industri dengan Ceramic Shield dan tahan air <br>
-                        * iOS 16 menawarkan semakin banyak cara untuk personalisasi, komunikasi, dan berbagi <br>
+                        <?= nl2br(htmlspecialchars($deskripsi)) ?>
                     </p>
                 </div>
                 <h6 class="mt-4">Rincian Penawaran Barang</h6>
@@ -132,22 +180,34 @@ include '../db_connect.php';
                                     </tr>
                                 </thead>
                                 <tbody>
+                                <?php
+                                $sqltawar = "SELECT penawaran.id_penawaran, penawaran.id_lelang, penawaran.penawaran_harga, penawaran.id_pembeli, penawaran.waktu, user.nama
+                                                FROM penawaran
+                                                JOIN user ON penawaran.id_pembeli = user.email
+                                                WHERE penawaran.id_lelang = $id_lelang";
+                                
+                                $query = mysqli_query($conn, $sqltawar);
+                                $datapenawaran = mysqli_fetch_assoc($query);
+                                ?>
                                     <tr>
+                                        <?php
+                                       foreach ($datapenawaran as $dttawar) {
+                                        ?>
                                         <td class="py-3">
-                                            <p class="text-xs font-weight-bold mb-0 ms-3">1</p>
+                                            <p class="text-xs font-weight-bold mb-0 ms-3"></p>
                                         </td>
                                         <td>
-                                            <p class="text-xs font-weight-bold mb-0">Jonathan</p>
+                                            <p class="text-xs font-weight-bold mb-0"><?= $dttawar['nama'] ?></p>
                                         </td>
                                         <td>
                                             <p class="align-middle text-center text-xs font-weight-bold mb-0">Rp.
-                                                12.000.000</p>
+                                            <?= $dttawar['penawaran_harga'] ?></p>
                                         </td>
                                         <td>
-                                            <p class="align-middle text-center text-xs font-weight-bold mb-0">29 Januari
-                                                2024 09:54:32</p>
+                                            <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dttawar['waktu'] ?></p>
                                         </td>
                                     </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                             <div class="d-flex justify-content-between align-items-center">

@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['simpan'])) {
     $photoNames = implode(',', $uploadedPhotos);
 
     // Simpan data menggunakan insert ke dalam tabel produk
-    $query = "INSERT INTO barang (nama, harga_awal, lokasi, deskripsi, kondisi, id_kategori, status, foto, id_penjual) 
-              VALUES ('$nama', $harga_awal, '$lokasi', '$deskripsi', '$kondisi', '$id_kategori', 'belum disetujui', '$photoNames', '$id_penjual')";
+    $query = "INSERT INTO barang (nama_barang, harga_awal, lokasi, deskripsi, kondisi, id_kategori, status, foto, id_penjual, dibuat, diubah) 
+              VALUES ('$nama', $harga_awal, '$lokasi', '$deskripsi', '$kondisi', '$id_kategori', 'belum disetujui', '$photoNames', '$id_penjual', NOW(), NULL)";
 
     // Jika query berhasil, redirect ke halaman barang.php
     if ($conn->query($query) === true) {

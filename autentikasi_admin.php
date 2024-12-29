@@ -29,7 +29,7 @@ if ($row == "") { // Username tidak ditemukan
             exit();
         } 
     } else {
-        header("location:login_seller.php?info=gagal");
+        header("location:login_admin.php?info=gagal");
     }
 }
 ?>
