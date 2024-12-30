@@ -8,7 +8,8 @@ $sqlStatement = "SELECT barang.id_barang, barang.nama_barang, barang.harga_awal,
     kategori.nama_kategori, user.nama
     FROM barang 
     JOIN kategori ON barang.id_kategori = kategori.id_kategori
-    JOIN user ON barang.id_penjual = user.email";
+    JOIN user ON barang.id_penjual = user.email
+    WHERE barang.status != 'disetujui'";
 $query = mysqli_query($conn, $sqlStatement);
 $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
 

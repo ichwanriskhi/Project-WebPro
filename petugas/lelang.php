@@ -132,7 +132,7 @@ if ($dibuka && $ditutup && $selesai) {
                       <th class="text-uppercase text-white text-xs font-weight-bolder">Nama Barang</th>
                       <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Kategori</th>
                       <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Tanggal Dibuka</th>
-                      <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Tawaran Tertinggi</th>
+                      <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Harga Akhir</th>
                       <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Status</th>
                       <th class="text-center text-uppercase text-white text-xs font-weight-bolder">Aksi</th>
                     </tr>
@@ -164,7 +164,7 @@ if ($dibuka && $ditutup && $selesai) {
 
                             if ($status == "dibuka") {
                                 echo '<span class="badge badge-sm bg-gradient-success" style="width: 113px;">Dibuka</span>';
-                            } elseif ($status == "belum ditutup") {
+                            } elseif ($status == "ditutup") {
                                 echo '<span class="badge badge-sm bg-gradient-secondary" style="width: 113px;">Ditutup</span>';
                             } elseif ($status == "selesai") {
                                 echo '<span class="badge badge-sm bg-gradient-danger" style="width: 113px;">Selesai</span>';

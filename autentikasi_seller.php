@@ -16,6 +16,7 @@ if ($row == "") { // Username tidak ditemukan
     if (password_verify($password, $row['password'])) { // Username dan password cocok
         session_start();
         $_SESSION['email'] = $row['email'];
+        $_SESSION['nama'] = $row['nama'];
         $_SESSION['role'] = "penjual";
         $_SESSION['status'] = "login";
         header("location:seller/index.php");

@@ -88,7 +88,7 @@ if($_SESSION['status'] == ""){
         <!-- Dropdown Trigger -->
         <div class="dropdown dropup">
           <button class="btn btn-outline-dark mt-4 w-100 dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="material-symbols-rounded opacity-5">person</i> Christina Alphine
+            <i class="material-symbols-rounded opacity-5">person</i> <?= $_SESSION['nama']?>
           </button>
           <!-- Dropdown Menu -->
           <ul class="dropdown-menu dropdown-menu-end px-2 py-2" aria-labelledby="dropdownMenuButton">
@@ -174,7 +174,7 @@ if($_SESSION['status'] == ""){
         <!-- Dropdown Trigger -->
         <div class="dropdown dropup">
           <button class="btn btn-outline-dark mt-4 w-100 dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="material-symbols-rounded opacity-5">person</i> Christina Alphine
+            <i class="material-symbols-rounded opacity-5">person</i> <?= $_SESSION['nama']?>
           </button>
           <!-- Dropdown Menu -->
           <ul class="dropdown-menu dropdown-menu-end px-2 py-2" aria-labelledby="dropdownMenuButton">
@@ -245,7 +245,7 @@ if($_SESSION['status'] == ""){
         <div class="dropdown dropup">
           <button class="btn btn-outline-dark mt-4 w-100 dropdown-toggle" type="button" id="dropdownMenuButton"
             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="material-symbols-rounded opacity-5">person</i> Christina Alphine
+            <i class="material-symbols-rounded opacity-5">person</i> <?= $_SESSION['nama']?>
           </button>
           <!-- Dropdown Menu -->
           <ul class="dropdown-menu dropdown-menu-end px-2 py-2" aria-labelledby="dropdownMenuButton">
@@ -328,7 +328,7 @@ if($_SESSION['status'] == ""){
           <div class="dropdown dropup">
             <button class="btn btn-outline-dark mt-4 w-100 dropdown-toggle" type="button" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="material-symbols-rounded opacity-5">person</i> Christina Alphine
+              <i class="material-symbols-rounded opacity-5">person</i> <?= $_SESSION['nama']?>
             </button>
             <!-- Dropdown Menu -->
             <ul class="dropdown-menu dropdown-menu-end px-2 py-2" aria-labelledby="dropdownMenuButton">
