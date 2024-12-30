@@ -14,9 +14,9 @@ $sqlStatement = "SELECT barang.id_barang, barang.nama_barang, barang.harga_awal,
 $query = mysqli_query($conn, $sqlStatement);
 $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
-$dtdisetujui = "SELECT COUNT(*) as total FROM barang WHERE status = 'disetujui'";
-$dtbelumdisetujui = "SELECT COUNT(*) as total FROM barang WHERE status = 'belum disetujui'";
-$dtditolak = "SELECT COUNT(*) as total FROM barang WHERE status = 'ditolak'";
+$dtdisetujui = "SELECT COUNT(*) as total FROM barang WHERE status = 'disetujui' AND id_penjual = '$penjual'";
+$dtbelumdisetujui = "SELECT COUNT(*) as total FROM barang WHERE status = 'belum disetujui' AND id_penjual = '$penjual'";
+$dtditolak = "SELECT COUNT(*) as total FROM barang WHERE status = 'ditolak' AND id_penjual = '$penjual'";
 
 $disetujui = mysqli_query($conn, $dtdisetujui);
 $belumdisetujui = mysqli_query($conn, $dtbelumdisetujui);

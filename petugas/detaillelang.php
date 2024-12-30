@@ -7,6 +7,7 @@ $id_lelang = $_GET['id_lelang'];
 // Query untuk mengambil data barang dan kategori, termasuk kondisi dan lokasi
 $sqlStatement = "SELECT 
                     lelang.id_lelang,
+                    lelang.status,
                     barang.id_barang, 
                     barang.nama_barang, 
                     kategori.nama_kategori, 
@@ -39,6 +40,7 @@ if ($data) {
     $deskripsi = $data['deskripsi'];
     $penjual = $data['nama_penjual'];
     $pembeli = $data['nama_penawar'];
+    $status_lelang = $data['status'];
 
     // Menyesuaikan nama lokasi berdasarkan nilai lokasi dari database
     switch (strtolower(trim($lokasi))) {
@@ -134,11 +136,56 @@ $tawaranTertinggi = $rowTawaran['tawaran_tertinggi'] ?? 0; // Jika tidak ada dat
                             <label class="form-label text-sm fw-bold text-dark ms-0" for="penawartertinggi">Penawar
                                 Tertinggi</label>
                             <input class="form-control bg-white ps-3 text-md fw-bold" id="penawartertinggi"
-                                name="penawartertinggi" placeholder="Silakan masukkan tawaran anda..." type="text"
+                                name="penawartertinggi" placeholder="Belum ada penawar" type="text"
                                 value="<?=$pembeli?>" disabled>
                         </div>
-                        <button class="btn btn-dark w-100" type="submit">Akhiri Lelang</button>
                     </form>
+                    <?php  if ($status_lelang == "dibuka"){ ?>
+                        <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#tutuplelang">Tutup Lelang</button>
+                    <?php } else if ( $status_lelang == "ditutup"){?>
+                        <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#bukalelang">Buka Lelang</button>
+                    <?php }?>
+                    <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#akhirilelang">Akhiri Lelang</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="tutuplelang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-body p-5 text-center">
+                                Apakah anda yakin ingin menutup lelang barang <?=$namaBarang?> ini?
+                            </div>
+                            <div class="d-flex justify-content-center text-center">
+                                <a href="tutuplelang.php?id_lelang=<?= $id_lelang ?>" class="btn btn-danger w-20 me-2">Ya</a>
+                                <button type="button" class="btn btn-secondary w-20" data-bs-dismiss="modal">Kembali</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="bukalelang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-body p-5 text-center">
+                                Apakah anda yakin ingin membuka lagi lelang barang <?=$namaBarang?> ini?
+                            </div>
+                            <div class="d-flex justify-content-center text-center">
+                                <a href="bukalelang.php?id_lelang=<?= $id_lelang ?>" class="btn btn-danger w-20 me-2">Ya</a>
+                                <button type="button" class="btn btn-secondary w-20" data-bs-dismiss="modal">Kembali</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="akhirilelang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-body p-5 text-center">
+                                Apakah anda yakin ingin menyelesaikan lelang barang <?=$namaBarang?> ini?
+                            </div>
+                            <div class="d-flex justify-content-center text-center">
+                                <a href="akhirilelang.php?id_lelang=<?= $id_lelang ?>" class="btn btn-danger w-20 me-2">Ya</a>
+                                <button type="button" class="btn btn-secondary w-20" data-bs-dismiss="modal">Kembali</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
                     <h6 class="mt-4">Profil Penjual</h6>
                     <div class="prof-penjual d-flex justify-content-between p-3 bg-white border-radius-md">
                         <div class="d-flex align-items-center">
@@ -173,38 +220,51 @@ $tawaranTertinggi = $rowTawaran['tawaran_tertinggi'] ?? 0; // Jika tidak ada dat
                                     <tr>
                                         <th class="text-uppercase text-white text-xs font-weight-bolder">#</th>
                                         <th class="text-uppercase text-white text-xs font-weight-bolder">Nama</th>
+                                        <th class="text-uppercase text-white text-xs font-weight-bolder">Email</th>
                                         <th class="text-center text-uppercase text-white text-xs font-weight-bolder">
                                             Nominal Tawaran</th>
                                         <th class="text-center text-uppercase text-white text-xs font-weight-bolder">
                                             Waktu Penawaran</th>
+                                        <th class="text-center text-uppercase text-white text-xs font-weight-bolder">
+                                            Status
+                                        </th>                                            
                                     </tr>
                                 </thead>
-                                <tbody>
                                 <?php
-                                $sqltawar = "SELECT penawaran.id_penawaran, penawaran.id_lelang, penawaran.penawaran_harga, penawaran.id_pembeli, penawaran.waktu, user.nama
-                                                FROM penawaran
-                                                JOIN user ON penawaran.id_pembeli = user.email
-                                                WHERE penawaran.id_lelang = $id_lelang";
-                                
-                                $query = mysqli_query($conn, $sqltawar);
-                                $datapenawaran = mysqli_fetch_assoc($query);
-                                ?>
+                                    $query = "SELECT penawaran.id_lelang, penawaran.penawaran_harga, penawaran.id_pembeli, penawaran.waktu, penawaran.status_tawar,user.nama
+                                            FROM penawaran
+                                            JOIN user ON penawaran.id_pembeli = user.email
+                                            WHERE penawaran.id_lelang = $id_lelang";
+                                    $result = mysqli_query($conn, $query);
+                                    $datatawar = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                                    ?>
+                                <tbody>
                                     <tr>
-                                        <?php
-                                       foreach ($datapenawaran as $dttawar) {
+                                        <?php 
+                                        foreach ($datatawar as $key => $dttwr) {
                                         ?>
                                         <td class="py-3">
-                                            <p class="text-xs font-weight-bold mb-0 ms-3"></p>
+                                            <p class="text-xs font-weight-bold mb-0 ms-3"><?= ++$key?></p>
                                         </td>
                                         <td>
-                                            <p class="text-xs font-weight-bold mb-0"><?= $dttawar['nama'] ?></p>
+                                            <p class="text-xs font-weight-bold mb-0"><?= $dttwr['nama']?></p>
                                         </td>
                                         <td>
-                                            <p class="align-middle text-center text-xs font-weight-bold mb-0">Rp.
-                                            <?= $dttawar['penawaran_harga'] ?></p>
+                                            <p class="text-xs font-weight-bold mb-0"><?= $dttwr['id_pembeli']?></p>
                                         </td>
                                         <td>
-                                            <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dttawar['waktu'] ?></p>
+                                            <p class="align-middle text-center text-xs font-weight-bold mb-0">Rp. <?= number_format($dttwr['penawaran_harga'])?></p>
+                                        </td>
+                                        <td>
+                                            <p class="align-middle text-center text-xs font-weight-bold mb-0"><?= $dttwr['waktu']?></p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <?php
+                                            if ($dttwr['status_tawar'] == "win"){ ?>
+                                                <button class="btn btn-transparent text-sm p-2 m-1"><i class="fas fa-crown" style="color: gold;"></i></button>
+                                            <?php } else if ($dttwr['status_tawar'] == "banned"){ ?>
+                                                <i class="material-symbols-rounded opacity-10">block</i>
+                                            <?php } ?>
                                         </td>
                                     </tr>
                                     <?php } ?>
